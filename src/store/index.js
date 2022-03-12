@@ -14,11 +14,94 @@ store.state = () => ({
   projectKey: projectKey.split('-').slice(1).join('-'),
   delimiterStart: '{{:',
   delimiterEnd: ':}}',
+  globalRepositoryHash: null,
+  globalRepositorySize: null,
+  globalRepositoryPath: null,
+  globalRepository: {},
+  repositoryArray: [],
+  renderVariables: {
+    first_name: 'John',
+    last_name: 'Doe',
+    phone: '0652455478',
+    description: 'New Website',
+  },
 });
 
 
-store.mutations = {
+store.actions = {
+  addFilesToGlobalRepository({ commit, state }, files) {
+    _.each(files, (file, fileIndex) => {
+      if(file.name.startsWith('~') || file.name.startsWith('.')) return;
+      const path = (file.webkitRelativePath || file.name).replace(/\./g, ',').split('/');
 
+      const fullnameArray = _.last(path).split(',');
+      const fullname = fullnameArray.join('.');
+      const ext = _.last(fullnameArray);
+      const name = fullnameArray.slice(0, -1).join('.');
+      const isFile = true;
+
+      commit('addFileToGlobalRepository', {
+        path: path.join('.'),
+        file: { file, name, ext, isFile, fullname }
+      });
+    });
+    commit('updateRepositoryArray');
+    commit('updateHash');
+  },
+
+  updateGlobalRepositoryPath({ commit, state }, folder) {
+    const path = _.compact(_.split(state.globalRepositoryPath, '.'));
+    if(!folder && !path.length) return;
+    const globalRepositoryPath = folder
+      ? _.join(path.concat(folder), '.')
+      : _.join(path.slice(0, -1), '.');
+    commit('updateGlobalRepositoryPath', globalRepositoryPath);
+    commit('updateRepositoryArray');
+    commit('updateHash');
+  },
+
+  deleteFileFromGlobalRepository({ commit, state }, filename) {
+    const path = _.chain(state.globalRepositoryPath)
+      .split('.')
+      .compact()
+      .concat(filename)
+      .join('.')
+      .value();
+    commit('updateGlobalRepository', _.omit(state.globalRepository, path));
+    commit('updateRepositoryArray');
+    commit('updateHash');
+  },
+};
+
+
+store.mutations = {
+  addFileToGlobalRepository(state, { path, file }) {
+    const repository = state.globalRepositoryPath ? state.globalRepository : state;
+    const pathToRepo = state.globalRepositoryPath || 'globalRepository';
+    const chunk = _.get(repository, pathToRepo, {});
+    _.set(chunk, path, file);
+    _.set(repository, pathToRepo, chunk);
+  },
+
+  updateGlobalRepositoryPath: (state, path) => Vue.set(state, 'globalRepositoryPath', path),
+  updateGlobalRepository: (state, repository) => Vue.set(state, 'globalRepository', repository),
+
+  updateHash(state) {
+    state.globalRepositorySize = _.size(state.globalRepository);
+    state.globalRepositoryHash = Date.now();
+  },
+
+  updateRepositoryArray(state) {
+    const isExistPath = !!state.globalRepositoryPath;
+    const repo = isExistPath ? state.globalRepository : state;
+    const path = isExistPath ? state.globalRepositoryPath : 'globalRepository';
+    state.repositoryArray = _.chain(repo)
+      .get(path, {})
+      .entries()
+      .sortBy('[1].isFile')
+      .reverse()
+      .value();
+  },
 };
 
 
@@ -26,7 +109,7 @@ const persistedMinis = [
   'minis.minisThemeMain', 'minis.minisThemeSpecial', 'minis.minisLang',
   'minis.themesJSON', 'minis.translateJSON', 'minis.minisJSON',
 ];
-const persistedLocal = [];
+const persistedLocal = ['renderVariables', 'delimiterStart', 'delimiterEnd'];
 store.modules = { minis: minisModule };
 store.plugins = [
   createMutationsSharer({ predicate: () => [...persistedMinis, ...persistedLocal] }),

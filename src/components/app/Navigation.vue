@@ -1,15 +1,10 @@
 <template>
   <div class="navigation">
     <button 
-      v-if="!isModeCompare"
       class="navigation__item"
       v-text="pageName"
       @click="$emit('switchModeEditor')"
     />
-    <div v-else class="navigation__item nohover" style="cursor: default;">
-      <span v-text="compareStep"/>
-      <div class="compare_loader" :style="{ width: compareLoaderWidth }"/>
-    </div>
 
     <button 
       v-if="!isDesktop"
@@ -19,27 +14,18 @@
       <Icon type="settings"/>
     </button>
 
-    <button 
-      v-if="isModeEditor"
+    <button
       class="navigation__item navigation__item-special"
-      :disabled="!isEditorDataExist"
-      @click="isEditorDataExist && $emit('switchModeCompare')"
+      :disabled="!isExistRepository"
+      @click="isExistRepository && $emit('generate')"
     >
-      <Icon :type="isModeCompare ? 'cross-small' : 'paper-plane'"/>
-    </button>
-    <button 
-      v-else
-      class="navigation__item nofocus"
-      style="color: var(--special-color);"
-      :disabled="!isHistoryExist"
-      @click="isHistoryExist && $emit('switchModeHistory')"
-    >
-      <Icon :type="isHistoryModeAnswers ? 'menu-dots-vertical' : 'menu-dots'"/>
+      <Icon type="paper-plane"/>
     </button>
   </div>
 </template>
 
 <script>
+import _ from 'lodash';
 import Icon from './Icon';
 
 import translateMixin from '../../mixins/translate.mixin';
@@ -55,29 +41,19 @@ export default {
 
   props: {
     isDesktop: Boolean,
-    isModeCompare: Boolean,
     isModeEditor: Boolean,
-    isHistoryExist: Boolean,
-    isEditorDataExist: Boolean,
-    isHistoryModeAnswers: Boolean,
-    compareQuestionIndex: Number,
-    compareMaxQuestionsIndex: Number,
+    isExistRepository: Boolean,
   },
 
   data: () => ({
-    console,
+    lodash: _,
   }),
 
   computed: {
-    compareLoaderWidth: ths => `${ +(ths.compareQuestionIndex / ths.compareMaxQuestionsIndex * 100).toFixed(2) }%`,
     pageName() {
       return this.isModeEditor 
         ? this.translate('files.title')
         : this.translate('editor.title');
-    },
-    compareStep() {
-      const stepName = this.translate('compare.title');
-      return `${ stepName }: ${ this.compareQuestionIndex }/${ this.compareMaxQuestionsIndex }`;
     },
   },
 };

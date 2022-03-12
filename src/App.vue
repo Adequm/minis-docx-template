@@ -41,11 +41,11 @@
           @switchLang="switchLang"
           @switchFullscreen="isFullscreen = !isFullscreen"
         />
-        <div v-if="openedModalName == 'deletionConfirmation'" class="confirmation">
+        <!-- <div v-if="openedModalName == 'deletionConfirmation'" class="confirmation">
           <span v-text="translate('history.displays.history.buttonDeleteConfirm')"/>
           <strong v-text="getFormatDate(lodash.get(savedHistory[slideIndexHistory], 'date'))"/>
           <button v-text="translateDef('delete')" @click="removeFromHistoryHandler"/>
-        </div>
+        </div> -->
       </AppModal>
 
       <div 

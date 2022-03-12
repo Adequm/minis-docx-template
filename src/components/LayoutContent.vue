@@ -9,8 +9,10 @@
     <Navigation
       :isDesktop="isDesktop"
       :isModeEditor="isModeEditor"
+      :isExistRepository="!!globalRepositorySize"
       @openModal="$emit('openModal', $event)"
       @switchModeEditor="isModeEditor = !isModeEditor"
+      @generate="generateDocx(repositoryArray)"
     />
 
     <div class="minis__display">
@@ -21,24 +23,16 @@
         :appHeight="appHeight"
         :bodyHeight="bodyHeight"
         :slideIndex="slideIndexEditor"
+        :repositoryArray="repositoryArray"
+        :globalRepositoryPath="globalRepositoryPath"
+        :globalRepositoryHash="globalRepositoryHash"
+        :globalRepositorySize="globalRepositorySize"
         @changeSlide="slideIndexEditor = $event"
-        @updateInputFocus="$emit('updateInputFocus', $event)"
+        @addFilesToGlobalRepository="addFilesToGlobalRepository"
+        @deleteFileFromGlobalRepository="deleteFileFromGlobalRepository"
+        @updateGlobalRepositoryPath="updateGlobalRepositoryPath"
       />
 
-      <!-- <div class="files__wrapper">
-        <AppInputFiles 
-          placeholder="Выбор файлов"
-          class="input_file"
-          @uploadFiles="uploadFiles"
-        />
-        <div class="files__list">
-          <div class="files__list_item"
-            v-for="(file, index) of files"
-            :key="index"
-            v-text="file.name"
-          />
-        </div>
-      </div> -->
     </div>
 
   </div>
@@ -47,26 +41,24 @@
 <script>
 import _ from 'lodash';
 
-import Icon from './app/Icon';
-// import LayoutEditor from './layouts/LayoutEditor';
-// import LayoutCompare from './layouts/LayoutCompare';
-// import LayoutHistory from './layouts/LayoutHistory';
+import generateDocxMixin from '../mixins/generate-docx.mixin';
+
 import LayoutFiles from './layouts/LayoutFiles';
 
+import Icon from './app/Icon';
 import AppInputFiles from './app/AppInputFiles';
 import Navigation from './app/Navigation';
 
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations, mapActions } from 'vuex';
 
 export default {
   name: 'LayoutContent',
 
+  mixins: [generateDocxMixin],
+
   components: {
     Icon,
     LayoutFiles,
-    // LayoutEditor,
-    // LayoutCompare,
-    // LayoutHistory,
     AppInputFiles,
     Navigation,
   },
@@ -83,10 +75,15 @@ export default {
     lodash: _,
     isModeEditor: false,
     slideIndexEditor: 0,
-    files: {},
   }),
 
   computed: {
+    ...mapState([
+      'repositoryArray',
+      'globalRepositoryPath',
+      'globalRepositoryHash',
+      'globalRepositorySize',
+    ]),
     gridTemplateRows() {
       const header = Math.min(this.appHeight * 0.15, 85);
       const content = this.appHeight - header;
@@ -95,26 +92,17 @@ export default {
   },
 
   methods: {
-    uploadFiles(event) {
-
-      this.files = _.reduce(event.target.files, (acc, file, index) => {
-        return _.assign(acc, { [file.name]: file });
-      }, {});
-
-      console.log(event.target.files);
-    },
+    ...mapActions([
+      'addFilesToGlobalRepository',
+      'deleteFileFromGlobalRepository',
+      'updateGlobalRepositoryPath',
+    ]),
 
     keydown({ key, shiftKey }) {
       switch(key) {
         case 'Escape':
           this.$emit('switchSettings');
           break;
-        // case 'ArrowLeft':
-        //   this.swiperPage = 0;
-        //   break;
-        // case 'ArrowRight':
-        //   this.swiperPage = 1;
-        //   break;
       }
     },
   },

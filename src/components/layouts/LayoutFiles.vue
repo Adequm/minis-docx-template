@@ -5,15 +5,15 @@
       <AppInputFiles 
         id="1"
         placeholder="Файлы"
-        icon="duplicate"
-        @upload="addFilesToGlobalRepository($event.target.files)"
+        icon="add-document"
+        @upload="$emit('addFilesToGlobalRepository', $event.target.files)"
         multiple
       />
      <AppInputFiles 
         id="2"
         placeholder="Папки"
-        icon="folder"
-        @upload="addFilesToGlobalRepository($event.target.files)"
+        icon="add-folder"
+        @upload="$emit('addFilesToGlobalRepository', $event.target.files)"
         allowdirs
         directory
         webkitdirectory
@@ -23,43 +23,31 @@
     <div class="layout__display" :class="{ isEnd, isBeginning }">
       <div 
         class="layout__display_content" 
-        :style="{ 
-          height: isShowSlideButtons ? `calc(100% - 45px)` : '100%'
-        }"
+        :style="{ height: '100%' }"
       >
         <Swiper ref="swiper" @activeIndexChange="$emit('changeSlide', $event.realIndex)">
           <SwiperSlide>
             <div class="slide__container" :style="{ height: `${ slideHeight }px` }">
               <DisplayRepository
                 v-if="globalRepositorySize"
-                :repository="globalRepository"
+                :data="repositoryArray"
                 :path="globalRepositoryPath"
                 :key="globalRepositoryHash"
-                :style="{ paddingBottom: isShowSlideButtons ? '0' : '10px' }"
-                @back="updatePath(false)"
-                @folder="updatePath($event)"
-                @remove="deleteFileFromGlobalRepository"
-                @edit="edit('priority', $event)"
+                :displayWidth="appWidth - 40"
+                :style="{ paddingBottom: 0 }"
+                @back="$emit('updateGlobalRepositoryPath')"
+                @folder="$emit('updateGlobalRepositoryPath', $event)"
+                @remove="$emit('deleteFileFromGlobalRepository', $event)"
               />
               <DisplayEmpty
                 v-else
-                :text="translate('editor.displays.priorities.title')"
-                icon="star"
+                :text="translate('files.displays.repository.title')"
+                icon="folder"
               />
             </div>
           </SwiperSlide>
         </Swiper>
       </div>
-
-      <SlideButtons
-        ref="slideButtons"
-        v-if="isShowSlideButtons"
-        :limit="slideList.length"
-        :isBeginning="isBeginning"
-        :isEnd="isEnd"
-        :value="slideIndex"
-        @input="$emit('changeSlide', $event)"
-      />
     </div>
   </div>
 </template>
@@ -68,27 +56,19 @@
 import { Swiper, SwiperSlide } from 'swiper-vue2';
 
 import translateMixin from '../../mixins/translate.mixin';
-import generateDocxMixin from '../../mixins/generate-docx.mixin';
-import uploadFilesMixin from '../../mixins/upload-files.mixin';
 
-// import DisplayPriorities from '../display/DisplayPriorities';
-// import DisplayQuestions from '../display/DisplayQuestions';
 import DisplayEmpty from '../display/DisplayEmpty';
 import DisplayRepository from '../display/DisplayRepository';
 
-import SlideButtons from '../app/SlideButtons';
 import AppInputFiles from '../app/AppInputFiles';
 
 export default {
-  name: 'LayoutEditor',
+  name: 'LayoutFiles',
 
-  mixins: [translateMixin, generateDocxMixin, uploadFilesMixin],
+  mixins: [translateMixin],
 
   components: {
-    SlideButtons,
     AppInputFiles,
-    // DisplayPriorities,
-    // DisplayQuestions,
     DisplayEmpty,
     DisplayRepository,
     Swiper,
@@ -99,22 +79,20 @@ export default {
     appWidth: Number,
     appHeight: Number,
     bodyHeight: Number,
-    questions: Array,
-    priorities: Array,
-    valueQuestion: String,
-    valuePriority: String,
     slideIndex: Number,
+    repositoryArray: Array,
+    globalRepositoryHash: Number,
+    globalRepositorySize: Number,
+    globalRepositoryPath: String,
   },
 
   data: () => ({
     lodash: _,
-    isShowSlideButtons: false,
     swiperRef: null,
     slideHeight: 0,
   }),
 
   watch: {
-    isShowSlideButtons: ['setSlideWidth', 'setSlideHeight'],
     appWidth: ['setSlideWidth', 'setSlideHeight'],
     appHeight: ['setSlideWidth', 'setSlideHeight'],
     textareaHeight: ['setSlideWidth', 'setSlideHeight'],
@@ -126,12 +104,6 @@ export default {
       immediate: true,
       handler: 'setSlideHeight',
     },
-    // minisLang: {
-    //   immediate: true,
-    //   handler() {
-    //     this.questionsList = this.translate('editor.displays.questions.questionsList', []);
-    //   }
-    // }
   },
 
   computed: {
@@ -146,11 +118,6 @@ export default {
     slideList() {
       return this.swiperRef?.slides || [];
     },
-    // textareaPlaceholder() {
-    //   return this.slideIndex 
-    //     ? this.translate('editor.displays.priorities.placeholder') 
-    //     : this.translate('editor.displays.questions.placeholder');
-    // },
   },
 
   methods: {
@@ -176,29 +143,6 @@ export default {
         this.swiperRef.slidesSizesGrid[slideIndex] = width;
       });
     },
-
-    // edit(type, index) {
-    //   if(type == 'priority') {
-    //     this.$emit('updateValuePriority', this.priorities[index]);
-    //     this.$emit('removePriority', index);
-    //   } else {
-    //     this.$emit('updateValueQuestion', this.questions[index]);
-    //     this.$emit('removeQuestion', index);
-    //   }
-    //   this.$refs.textarea.focus();
-    // },
-
-    // inputTextarea(value) {
-    //   this.slideIndex
-    //     ? this.$emit('updateValuePriority', value)
-    //     : this.$emit('updateValueQuestion', value);
-    // },
-
-    // submitTextarea(value) {
-    //   this.slideIndex
-    //     ? this.$emit('addPriority', value)
-    //     : this.$emit('addQuestion', value);
-    // },
   },
 
   mounted() {
@@ -259,7 +203,6 @@ export default {
     &.isBeginning::after { display: none; }
 
     .layout__display_content {
-      height: calc(100% - 45px);
       box-sizing: border-box;
       position: relative;
       overflow-x: hidden;
