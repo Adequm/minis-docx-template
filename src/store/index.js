@@ -109,7 +109,8 @@ const persistedMinis = [
   'minis.minisThemeMain', 'minis.minisThemeSpecial', 'minis.minisLang',
   'minis.themesJSON', 'minis.translateJSON', 'minis.minisJSON',
 ];
-const persistedLocal = ['renderVariables', 'delimiterStart', 'delimiterEnd'];
+// const persistedLocal = ['renderVariables', 'delimiterStart', 'delimiterEnd'];
+const persistedLocal = []
 store.modules = { minis: minisModule };
 store.plugins = [
   createMutationsSharer({ predicate: () => [...persistedMinis, ...persistedLocal] }),

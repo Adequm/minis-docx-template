@@ -10,6 +10,7 @@
       :isDesktop="isDesktop"
       :isModeEditor="isModeEditor"
       :isExistRepository="!!globalRepositorySize"
+      :isGenerated="isGenerated"
       @openModal="$emit('openModal', $event)"
       @switchModeEditor="isModeEditor = !isModeEditor"
       @generate="generateDocx(repositoryArray)"

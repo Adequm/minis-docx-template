@@ -34,7 +34,7 @@
                 :path="globalRepositoryPath"
                 :key="globalRepositoryHash"
                 :displayWidth="appWidth - 40"
-                :style="{ paddingBottom: 0 }"
+                :style="{ paddingBottom: '10px' }"
                 @back="$emit('updateGlobalRepositoryPath')"
                 @folder="$emit('updateGlobalRepositoryPath', $event)"
                 @remove="$emit('deleteFileFromGlobalRepository', $event)"

@@ -17,9 +17,10 @@
     <button
       class="navigation__item navigation__item-special"
       :disabled="!isExistRepository"
-      @click="isExistRepository && $emit('generate')"
+      @click="isExistRepository && !isGenerated && $emit('generate')"
     >
-      <Icon type="paper-plane"/>
+      <Icon v-if="isGenerated" type="time-oclock" rotate/>
+      <Icon v-else type="paper-plane"/>
     </button>
   </div>
 </template>
@@ -43,6 +44,7 @@ export default {
     isDesktop: Boolean,
     isModeEditor: Boolean,
     isExistRepository: Boolean,
+    isGenerated: Boolean,
   },
 
   data: () => ({
