@@ -106,7 +106,7 @@ export default {
       &_icons {
         float: right;
         display: flex;
-        margin-top: auto;
+        margin-bottom: auto;
         margin-left: auto;
       }
     }

@@ -17,6 +17,12 @@
         @focus="$emit('updateInputFocus', true)"
         @blur="$emit('updateInputFocus', false)"
       />
+      <div 
+        v-if="title"
+        class="textarea-title"
+        v-text="titlePrepend ? `${titlePrepend}: ${title}` : title"
+        @click="$emit('clickToTitle')"
+      />
       <button type="submit">
         <Icon type="plus-small"/>
       </button>
@@ -36,6 +42,8 @@ export default {
 
   props: {
     placeholder: String,
+    titlePrepend: String,
+    title: String,
     value: String,
     resize: Number,
   },
@@ -76,12 +84,12 @@ export default {
 
     focus() {
       this.$refs.textarea.focus();
+      return this;
     },
 
     submit() {
       if(!this.value.replace(/\n/g, '')) return;
       this.$emit('submit', this.value.trim().replace(/\n+$/, ''));
-      this.$emit('input', '');
     },
   },  
 };
@@ -100,6 +108,21 @@ export default {
     position: relative;
     font-size: 14px;
     border-radius: inherit;
+
+    .textarea-title {
+      position: absolute;
+      left: 10px;
+      bottom: calc(100% - 0.5em);
+      line-height: 1;
+      font-size: 12px;
+      background: linear-gradient(0deg, #0000 50%, var(--content-bg-color) 50%);
+      padding: 0 5px;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+    textarea:focus + .textarea-title {
+      color: var(--special-color);
+    }
     textarea {
       width: inherit;
       resize: none;

@@ -19,6 +19,7 @@ store.state = () => ({
   globalRepositoryPath: null,
   globalRepository: {},
   repositoryArray: [],
+  renderVariablesArray: [],
   renderVariables: {
     first_name: 'John',
     last_name: 'Doe',
@@ -102,6 +103,24 @@ store.mutations = {
       .reverse()
       .value();
   },
+
+  addRenderVariable({ renderVariablesArray }, { index, key, value }) {
+    const chunk = _.get(renderVariablesArray, index, []);
+    chunk.push({ key, value });
+    Vue.set(renderVariablesArray, index, chunk);
+  },
+
+  deleteRenderVariable({ renderVariablesArray }, { key, index }) {
+    const chunk = _.get(renderVariablesArray, index);
+    if(!chunk) return;
+    const indexItem = _.findIndex(chunk, { key });
+    chunk.splice(indexItem, 1);
+    if(_.size(chunk)) {
+      Vue.set(renderVariablesArray, index, chunk);
+    } else {
+      renderVariablesArray.splice(index, 1);
+    }
+  },
 };
 
 
@@ -109,8 +128,8 @@ const persistedMinis = [
   'minis.minisThemeMain', 'minis.minisThemeSpecial', 'minis.minisLang',
   'minis.themesJSON', 'minis.translateJSON', 'minis.minisJSON',
 ];
-// const persistedLocal = ['renderVariables', 'delimiterStart', 'delimiterEnd'];
-const persistedLocal = []
+const persistedLocal = ['renderVariablesArray', 'delimiterStart', 'delimiterEnd'];
+// const persistedLocal = []
 store.modules = { minis: minisModule };
 store.plugins = [
   createMutationsSharer({ predicate: () => [...persistedMinis, ...persistedLocal] }),

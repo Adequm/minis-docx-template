@@ -5,45 +5,44 @@
       ref="textarea"
       style="margin-bottom: 10px;"
       :resize="appWidth"
-      :value="slideIndex ? valuePriority : valueQuestion"
+      :value="isVariablesMode ? valueKey : valueResult"
       :placeholder="textareaPlaceholder"
+      :title="textareaTitle"
+      :titlePrepend="textareaTitlePrepend"
       @input="inputTextarea"
       @submit="submitTextarea"
       @updateInputFocus="$emit('updateInputFocus', $event)"
+      @clickToTitle="$refs.textarea.focus() && (isVariablesMode = !isVariablesMode)"
     />
 
     <div class="layout__display" :class="{ isEnd, isBeginning }">
       <div class="layout__display_content">
         <Swiper ref="swiper" @activeIndexChange="$emit('changeSlide', $event.realIndex)">
-          <SwiperSlide>
+          <template v-if="lodash.size(renderVariablesArray)">
+            <SwiperSlide
+              v-for="(chunk, chunkIndex) of renderVariablesArray"
+              :key="chunkIndex"
+            >
+              <div class="slide__container" :style="{ height: `${ slideHeight }px` }">
+                <DisplayVariables
+                  v-if="chunk.length"
+                  :chunk="chunk"
+                  @remove="deleteVariable"
+                  @edit="editVariable"
+                />
+                <DisplayEmpty
+                  v-else
+                  :text="translate('editor.displays.variables.title')"
+                  icon="notebook"
+                />
+              </div>
+            </SwiperSlide>
+          </template>
+          <SwiperSlide v-else>
             <div class="slide__container" :style="{ height: `${ slideHeight }px` }">
-              <DisplayQuestions
-                v-if="questions.length"
-                :questions="questions"
-                @remove="$emit('removeQuestion', $event)"
-                @edit="edit('question', $event)"
-              />
               <DisplayEmpty
-                v-else
-                :text="translate('editor.displays.questions.title')"
+                :text="translate('editor.displays.variables.title')"
                 icon="notebook"
-                :button="questionsList.length && translate('editor.displays.questions.buttonAdd')"
-                @click="questionsList.forEach(q => $emit('addQuestion', q))"
-              />
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div class="slide__container" :style="{ height: `${ slideHeight }px` }">
-              <DisplayPriorities
-                v-if="priorities.length"
-                :priorities="priorities"
-                @remove="$emit('removePriority', $event)"
-                @edit="edit('priority', $event)"
-              />
-              <DisplayEmpty
-                v-else
-                :text="translate('editor.displays.priorities.title')"
-                icon="star"
               />
             </div>
           </SwiperSlide>
@@ -66,8 +65,7 @@ import { Swiper, SwiperSlide } from 'swiper-vue2';
 
 import translateMixin from '../../mixins/translate.mixin';
 
-import DisplayPriorities from '../display/DisplayPriorities';
-import DisplayQuestions from '../display/DisplayQuestions';
+import DisplayVariables from '../display/DisplayVariables';
 import DisplayEmpty from '../display/DisplayEmpty';
 
 import SlideButtons from '../app/SlideButtons';
@@ -81,35 +79,34 @@ export default {
   components: {
     SlideButtons,
     AppTextarea,
-    DisplayPriorities,
-    DisplayQuestions,
+    DisplayVariables,
     DisplayEmpty,
     Swiper,
     SwiperSlide,
   },
 
   props: {
-    isShow: Boolean,
     appWidth: Number,
     appHeight: Number,
     bodyHeight: Number,
-    questions: Array,
-    priorities: Array,
-    valueQuestion: String,
-    valuePriority: String,
+    delimiterStart: String,
+    delimiterEnd: String,
+    renderVariablesArray: Array,
     slideIndex: Number,
   },
 
   data: () => ({
+    lodash: _,
     swiperRef: null,
     slideHeight: 0,
-    questionsList: [],
+    valueKey: null,
+    valueResult: null,
+    isVariablesMode: true,
   }),
 
   watch: {
     appWidth: ['setSlideWidth', 'setSlideHeight'],
     appHeight: ['setSlideWidth', 'setSlideHeight'],
-    textareaHeight: ['setSlideWidth', 'setSlideHeight'],
     slideIndex(slideIndex) {
       this.swiperRef.slideTo(slideIndex);
       this.setSlideWidth();
@@ -118,12 +115,8 @@ export default {
       immediate: true,
       handler: 'setSlideHeight',
     },
-    minisLang: {
-      immediate: true,
-      handler() {
-        this.questionsList = this.translate('editor.displays.questions.questionsList', []);
-      }
-    }
+    valueKey: ['setSlideHeight'],
+    valueResult: ['setSlideHeight'],
   },
 
   computed: {
@@ -138,17 +131,28 @@ export default {
     slideList() {
       return this.swiperRef?.slides || [];
     },
+    textareaTitle() {
+      const titleKey = this.delimiterStart + this.valueKey + this.delimiterEnd;
+      return this.isVariablesMode 
+        ? this.valueResult 
+        : this.valueKey && titleKey;
+    },
     textareaPlaceholder() {
-      return this.slideIndex 
-        ? this.translate('editor.displays.priorities.placeholder') 
-        : this.translate('editor.displays.questions.placeholder');
+      return this.isVariablesMode
+        ? this.translate('editor.displays.variables.textarea.placeholders.key')
+        : this.translate('editor.displays.variables.textarea.placeholders.value');
+    },
+    textareaTitlePrepend() {
+      return this.isVariablesMode
+        ? this.translate('editor.displays.variables.textarea.prepend.key')
+        : this.translate('editor.displays.variables.textarea.prepend.value');
     },
   },
 
   methods: {
     setSlideHeight() {
       this.$nextTick(() => {
-        this.slideHeight = this.$refs?.swiper?.$el?.offsetHeight;
+        this.slideHeight = this.$refs?.swiper?.$el?.parentElement?.offsetHeight;
       })
     },
 
@@ -169,27 +173,35 @@ export default {
       });
     },
 
-    edit(type, index) {
-      if(type == 'priority') {
-        this.$emit('updateValuePriority', this.priorities[index]);
-        this.$emit('removePriority', index);
-      } else {
-        this.$emit('updateValueQuestion', this.questions[index]);
-        this.$emit('removeQuestion', index);
-      }
-      this.$refs.textarea.focus();
-    },
-
     inputTextarea(value) {
-      this.slideIndex
-        ? this.$emit('updateValuePriority', value)
-        : this.$emit('updateValueQuestion', value);
+      if(this.isVariablesMode) {
+        this.valueKey = value;
+      } else {
+        this.valueResult = value;
+      };
     },
 
     submitTextarea(value) {
-      this.slideIndex
-        ? this.$emit('addPriority', value)
-        : this.$emit('addQuestion', value);
+      this.isVariablesMode = !this.isVariablesMode;
+      if(this.valueKey && this.valueResult) {
+        this.$emit('addRenderVariable', {
+          index: this.slideIndex,
+          value: this.valueResult,
+          key: this.valueKey,
+        });
+        this.valueKey = '';
+        this.valueResult = '';
+      }
+    },
+
+    deleteVariable({ key }) {
+      this.$emit('deleteRenderVariable', { key, index: this.slideIndex });
+    },
+
+    editVariable({ key, value }) {
+      this.deleteVariable({ key });
+      this.valueKey = key;
+      this.valueResult = value;
     },
   },
 

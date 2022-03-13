@@ -20,12 +20,9 @@
       />
     </div>
 
-    <div class="layout__display" :class="{ isEnd, isBeginning }">
-      <div 
-        class="layout__display_content" 
-        :style="{ height: '100%' }"
-      >
-        <Swiper ref="swiper" @activeIndexChange="$emit('changeSlide', $event.realIndex)">
+    <div class="layout__display">
+      <div class="layout__display_content">
+        <Swiper ref="swiper">
           <SwiperSlide>
             <div class="slide__container" :style="{ height: `${ slideHeight }px` }">
               <DisplayRepository
@@ -34,7 +31,6 @@
                 :path="globalRepositoryPath"
                 :key="globalRepositoryHash"
                 :displayWidth="appWidth - 40"
-                :style="{ paddingBottom: '10px' }"
                 @back="$emit('updateGlobalRepositoryPath')"
                 @folder="$emit('updateGlobalRepositoryPath', $event)"
                 @remove="$emit('deleteFileFromGlobalRepository', $event)"
@@ -79,7 +75,6 @@ export default {
     appWidth: Number,
     appHeight: Number,
     bodyHeight: Number,
-    slideIndex: Number,
     repositoryArray: Array,
     globalRepositoryHash: Number,
     globalRepositorySize: Number,
@@ -95,28 +90,9 @@ export default {
   watch: {
     appWidth: ['setSlideWidth', 'setSlideHeight'],
     appHeight: ['setSlideWidth', 'setSlideHeight'],
-    textareaHeight: ['setSlideWidth', 'setSlideHeight'],
-    slideIndex(slideIndex) {
-      this.swiperRef.slideTo(slideIndex);
-      this.setSlideWidth();
-    },
     bodyHeight: {
       immediate: true,
       handler: 'setSlideHeight',
-    },
-  },
-
-  computed: {
-    isEnd() {
-      const isEndSlide = this.slideIndex === this.slideList.length - 1;
-      return !!this.swiperRef && this.swiperRef.isEnd || isEndSlide;
-    },
-    isBeginning() {
-      const isBeginningSlide = this.slideIndex === 0;
-      return !!this.swiperRef && this.swiperRef.isBeginning || isBeginningSlide;
-    },
-    slideList() {
-      return this.swiperRef?.slides || [];
     },
   },
 
@@ -129,11 +105,8 @@ export default {
 
     setSlideWidth() {
       const width = this.appWidth - 40;
-      const slideTransform = `translate3d(-${ this.slideIndex * width }px, 0px, 0px)`;
-
       const swiperWrapper = document.querySelector('#layout-editor .swiper-wrapper');
       _.invoke(swiperWrapper?.style, 'setProperty', 'max-width', `${ width }px`);
-      _.invoke(swiperWrapper?.style, 'setProperty', 'transform', slideTransform);
 
       const swiperSlides = document.querySelectorAll('#layout-editor .swiper-slide');
       [].forEach.call(swiperSlides, (slide, slideIndex) => {
@@ -147,7 +120,6 @@ export default {
 
   mounted() {
     this.swiperRef = this.$refs.swiper.swiperRef;
-    this.swiperRef.slideTo(this.slideIndex, 0);
     this.$nextTick(this.setSlideWidth);
   },
 };
@@ -182,27 +154,8 @@ export default {
       outline: 1px solid var(--special-color);
     }
 
-    &::after, &::before {
-      content: '';
-      position: absolute;
-      width: 10px;
-      height: 20px;
-      clip-path: polygon(0 0, 100% 50%, 0 100%);
-      background-color: var(--special-color);
-      top: calc(50% + 35px/2);
-    }
-    &::before {
-      left: calc(100% - 20px);
-    }
-    &::after {
-      right: calc(100% - 20px);
-      transform: scale(-1);
-    }
-
-    &.isEnd::before { display: none; }
-    &.isBeginning::after { display: none; }
-
     .layout__display_content {
+      height: 100%;
       box-sizing: border-box;
       position: relative;
       overflow-x: hidden;

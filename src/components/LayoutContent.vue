@@ -18,17 +18,31 @@
 
     <div class="minis__display">
 
-      <LayoutFiles
-        v-if="!isModeEditor"
+      <LayoutEditor
+        v-if="isModeEditor"
         :appWidth="appWidth"
         :appHeight="appHeight"
         :bodyHeight="bodyHeight"
         :slideIndex="slideIndexEditor"
+        :isVariablesMode="false"
+        :delimiterStart="delimiterStart"
+        :delimiterEnd="delimiterEnd"
+        :globalRepositoryPath="globalRepositoryPath"
+        :renderVariablesArray="renderVariablesArray"
+        @changeSlide="slideIndexEditor = $event"
+        @deleteRenderVariable="deleteRenderVariable"
+        @addRenderVariable="addRenderVariable"
+      />
+
+      <LayoutFiles
+        v-else
+        :appWidth="appWidth"
+        :appHeight="appHeight"
+        :bodyHeight="bodyHeight"
         :repositoryArray="repositoryArray"
         :globalRepositoryPath="globalRepositoryPath"
         :globalRepositoryHash="globalRepositoryHash"
         :globalRepositorySize="globalRepositorySize"
-        @changeSlide="slideIndexEditor = $event"
         @addFilesToGlobalRepository="addFilesToGlobalRepository"
         @deleteFileFromGlobalRepository="deleteFileFromGlobalRepository"
         @updateGlobalRepositoryPath="updateGlobalRepositoryPath"
@@ -45,6 +59,7 @@ import _ from 'lodash';
 import generateDocxMixin from '../mixins/generate-docx.mixin';
 
 import LayoutFiles from './layouts/LayoutFiles';
+import LayoutEditor from './layouts/LayoutEditor';
 
 import Icon from './app/Icon';
 import AppInputFiles from './app/AppInputFiles';
@@ -60,6 +75,7 @@ export default {
   components: {
     Icon,
     LayoutFiles,
+    LayoutEditor,
     AppInputFiles,
     Navigation,
   },
@@ -81,6 +97,9 @@ export default {
   computed: {
     ...mapState([
       'repositoryArray',
+      'delimiterStart',
+      'delimiterEnd',
+      'renderVariablesArray',
       'globalRepositoryPath',
       'globalRepositoryHash',
       'globalRepositorySize',
@@ -97,6 +116,10 @@ export default {
       'addFilesToGlobalRepository',
       'deleteFileFromGlobalRepository',
       'updateGlobalRepositoryPath',
+    ]),
+    ...mapMutations([
+      'addRenderVariable',
+      'deleteRenderVariable',
     ]),
 
     keydown({ key, shiftKey }) {
