@@ -69,7 +69,6 @@ export default {
       margin-left: auto;
       .icon {
         color: var(--text-color);
-        opacity: .33;
         margin-top: auto;
         cursor: pointer;
         &:nth-child(1) {
@@ -77,7 +76,6 @@ export default {
         }
         &:hover {
           color: var(--special-color);
-          opacity: 1;
         }
       }
     }
