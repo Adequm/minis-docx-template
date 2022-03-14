@@ -24,7 +24,7 @@
               :key="chunkIndex"
             >
               <div class="slide__container" :style="{ height: `${ slideHeight }px` }">
-                <DisplayVariables
+                <DisplayEditor
                   v-if="chunk.length"
                   :chunk="chunk"
                   @remove="deleteVariable"
@@ -65,7 +65,7 @@ import { Swiper, SwiperSlide } from 'swiper-vue2';
 
 import translateMixin from '../../mixins/translate.mixin';
 
-import DisplayVariables from '../display/DisplayVariables';
+import DisplayEditor from '../display/DisplayEditor';
 import DisplayEmpty from '../display/DisplayEmpty';
 
 import SlideButtons from '../app/SlideButtons';
@@ -79,7 +79,7 @@ export default {
   components: {
     SlideButtons,
     AppTextarea,
-    DisplayVariables,
+    DisplayEditor,
     DisplayEmpty,
     Swiper,
     SwiperSlide,

@@ -21,7 +21,7 @@
 import Icon from '../app/Icon';
 
 export default {
-  name: 'DisplayVariables',
+  name: 'DisplayEditor',
 
   components: {
     Icon,

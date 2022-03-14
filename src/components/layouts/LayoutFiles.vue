@@ -25,7 +25,7 @@
         <Swiper ref="swiper">
           <SwiperSlide>
             <div class="slide__container" :style="{ height: `${ slideHeight }px` }">
-              <DisplayRepository
+              <DisplayFiles
                 v-if="globalRepositorySize"
                 :data="repositoryArray"
                 :path="globalRepositoryPath"
@@ -54,7 +54,7 @@ import { Swiper, SwiperSlide } from 'swiper-vue2';
 import translateMixin from '../../mixins/translate.mixin';
 
 import DisplayEmpty from '../display/DisplayEmpty';
-import DisplayRepository from '../display/DisplayRepository';
+import DisplayFiles from '../display/DisplayFiles';
 
 import AppInputFiles from '../app/AppInputFiles';
 
@@ -66,7 +66,7 @@ export default {
   components: {
     AppInputFiles,
     DisplayEmpty,
-    DisplayRepository,
+    DisplayFiles,
     Swiper,
     SwiperSlide,
   },

@@ -37,7 +37,7 @@ import _ from 'lodash';
 import Icon from '../app/Icon';
 
 export default {
-  name: 'DisplayRepository',
+  name: 'DisplayFiles',
 
   components: {
     Icon,
