@@ -44,7 +44,14 @@ export default {
 		getConvertRenderVariables() {
 			const data = this.renderVariablesArray[this.slideIndexEditor];
 			const result = _.chain(data).map(_.values).fromPairs().value();
-			Vue.set(this, 'convertsRenderVariables', result);
+			const { delimiterStart: start, delimiterEnd: end } = this;
+			const resultProxy = new Proxy(result, {
+				get(target, key) {
+					const defaultKey = typeof key == 'string' ? start + key + end : key;
+					return key in target ? target[key] : defaultKey;
+				}
+			})
+			Vue.set(this, 'convertsRenderVariables', resultProxy);
 		},
 
 		convertDocToDocx(name, data) {
