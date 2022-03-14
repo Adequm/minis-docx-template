@@ -32,7 +32,7 @@
                 />
                 <DisplayEmpty
                   v-else
-                  :text="translate('editor.displays.variables.title')"
+                  :text="translate('editor.displays.empty.title')"
                   icon="notebook"
                 />
               </div>
@@ -41,7 +41,7 @@
           <SwiperSlide v-else>
             <div class="slide__container" :style="{ height: `${ slideHeight }px` }">
               <DisplayEmpty
-                :text="translate('editor.displays.variables.title')"
+                :text="translate('editor.displays.empty.title')"
                 icon="notebook"
               />
             </div>
@@ -139,13 +139,13 @@ export default {
     },
     textareaPlaceholder() {
       return this.isVariablesMode
-        ? this.translate('editor.displays.variables.textarea.placeholders.key')
-        : this.translate('editor.displays.variables.textarea.placeholders.value');
+        ? this.translate('editor.textareas.placeholders.key')
+        : this.translate('editor.textareas.placeholders.value');
     },
     textareaTitlePrepend() {
       return this.isVariablesMode
-        ? this.translate('editor.displays.variables.textarea.prepend.key')
-        : this.translate('editor.displays.variables.textarea.prepend.value');
+        ? this.translate('editor.textareas.placeholders.value')
+        : this.translate('editor.textareas.placeholders.key');
     },
   },
 

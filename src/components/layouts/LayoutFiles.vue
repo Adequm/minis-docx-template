@@ -4,14 +4,14 @@
     <div class="input_files_container">
       <AppInputFiles 
         id="1"
-        placeholder="Файлы"
+        :placeholder="translate('files.inputs.files.placeholder')"
         icon="add-document"
         @upload="$emit('addFilesToGlobalRepository', $event.target.files)"
         multiple
       />
      <AppInputFiles 
         id="2"
-        placeholder="Папки"
+        :placeholder="translate('files.inputs.folders.placeholder')"
         icon="add-folder"
         @upload="$emit('addFilesToGlobalRepository', $event.target.files)"
         allowdirs
@@ -37,7 +37,7 @@
               />
               <DisplayEmpty
                 v-else
-                :text="translate('files.displays.repository.title')"
+                :text="translate('files.displays.empty.title')"
                 icon="folder"
               />
             </div>
