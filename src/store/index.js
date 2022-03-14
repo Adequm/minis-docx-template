@@ -11,6 +11,7 @@ const store = {};
 Vue.use(Vuex);
 
 store.state = () => ({
+  isFullscreen: false,
   projectKey: projectKey.split('-').slice(1).join('-'),
   delimiterStart: '{{:',
   delimiterEnd: ':}}',
@@ -20,12 +21,6 @@ store.state = () => ({
   globalRepository: {},
   repositoryArray: [],
   renderVariablesArray: [],
-  renderVariables: {
-    first_name: 'John',
-    last_name: 'Doe',
-    phone: '0652455478',
-    description: 'New Website',
-  },
 });
 
 
@@ -76,6 +71,7 @@ store.actions = {
 
 
 store.mutations = {
+  switchFullscreen: state => Vue.set(state, 'isFullscreen', !state.isFullscreen),
   addFileToGlobalRepository(state, { path, file }) {
     const repository = state.globalRepositoryPath ? state.globalRepository : state;
     const pathToRepo = state.globalRepositoryPath || 'globalRepository';
@@ -125,11 +121,19 @@ store.mutations = {
 
 
 const persistedMinis = [
-  'minis.minisThemeMain', 'minis.minisThemeSpecial', 'minis.minisLang',
-  'minis.themesJSON', 'minis.translateJSON', 'minis.minisJSON',
+  'minis.minisThemeMain', 
+  'minis.minisThemeSpecial', 
+  'minis.minisLang',
+  'minis.themesJSON', 
+  'minis.translateJSON', 
+  'minis.minisJSON',
 ];
-const persistedLocal = ['renderVariablesArray', 'delimiterStart', 'delimiterEnd'];
-// const persistedLocal = []
+const persistedLocal = [
+  'isFullscreen',
+  'renderVariablesArray', 
+  'delimiterStart', 
+  'delimiterEnd',
+];
 store.modules = { minis: minisModule };
 store.plugins = [
   createMutationsSharer({ predicate: () => [...persistedMinis, ...persistedLocal] }),

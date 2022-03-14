@@ -1,6 +1,7 @@
 <template>
   <div 
     class="container" 
+    :class="{ fullscreen: isFullscreen }"
     :style="{ 
       height: `${ innerHeight }px`, 
       maxWidth: isDesktop ? `${ containerWidth }px` : '100vw',
@@ -16,7 +17,7 @@
         v-model="isClosedSettings"
         @switchTheme="switchTheme"
         @switchLang="switchLang"
-        @switchFullscreen="isFullscreen = !isFullscreen"
+        @switchFullscreen="switchFullscreen"
       />
 
       <LayoutContent
@@ -39,13 +40,8 @@
           :isWidthMore768="isWidthMore768"
           @switchTheme="switchTheme"
           @switchLang="switchLang"
-          @switchFullscreen="isFullscreen = !isFullscreen"
+          @switchFullscreen="switchFullscreen"
         />
-        <!-- <div v-if="openedModalName == 'deletionConfirmation'" class="confirmation">
-          <span v-text="translate('history.displays.history.buttonDeleteConfirm')"/>
-          <strong v-text="getFormatDate(lodash.get(savedHistory[slideIndexHistory], 'date'))"/>
-          <button v-text="translateDef('delete')" @click="removeFromHistoryHandler"/>
-        </div> -->
       </AppModal>
 
       <div 
@@ -54,7 +50,13 @@
         @mousedown.prevent="startResize"
         @dblclick.prevent="autoResize"
       />
-      <a v-if="isDesktop" href="https://adequm.github.io/minis" target="_blank" class="minis">Minis</a>
+      <a 
+        v-if="isDesktop" 
+        href="https://adequm.github.io/minis" 
+        target="_blank" 
+        class="minis"
+        v-text="'Minis'"
+      />
     </div>
 
   </div>
@@ -74,7 +76,7 @@ import AppModal from './components/app/AppModal';
 
 import LayoutContent from './components/LayoutContent';
 
-import { mapState } from 'vuex';
+import { mapMutations } from 'vuex';
 
 export default {
   components: {
@@ -95,7 +97,6 @@ export default {
   }),
 
   watch: {
-    // isPageLoad: 'autoResize',
     isDesktop(isDesktop) {
       if(isDesktop && this.openedModalName == 'settings') {
         this.openedModalName = null;
@@ -104,8 +105,11 @@ export default {
     },
   },
 
+  methods: {
+    ...mapMutations(['switchFullscreen']),
+  },
+
   beforeMount() {
-    // this.isFullscreen = true;
     document.body.addEventListener('click', event => {
       if(document.body !== event.path[0]) return;
       if(!this.isDesktop) return;
