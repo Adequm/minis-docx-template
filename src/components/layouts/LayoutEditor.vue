@@ -202,6 +202,8 @@ export default {
       this.deleteVariable({ key });
       this.valueKey = key;
       this.valueResult = value;
+      this.$refs.textarea.focus();
+      this.isVariablesMode = false;
     },
   },
 
