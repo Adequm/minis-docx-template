@@ -9,7 +9,7 @@
     <Navigation
       :isDesktop="isDesktop"
       :isModeEditor="isModeEditor"
-      :isExistRepository="!!globalRepositorySize"
+      :isExistRepository="!!globalRepositorySize && !!lodash.size(renderVariablesArray[slideIndexEditor])"
       :isGenerated="isGenerated"
       @openModal="$emit('openModal', $event)"
       @switchModeEditor="isModeEditor = !isModeEditor"
