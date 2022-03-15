@@ -6,7 +6,7 @@
       gridTemplateRows
     }"
   >
-    <Navigation
+    <AppNavigation
       :isDesktop="isDesktop"
       :isModeEditor="isModeEditor"
       :isExistRepository="!!globalRepositorySize && !!lodash.size(renderVariablesArray[slideIndexEditor])"
@@ -65,7 +65,7 @@ import LayoutFiles from './layouts/LayoutFiles';
 import LayoutEditor from './layouts/LayoutEditor';
 
 import { Icon } from '@minis-core/components';
-import Navigation from './app/Navigation';
+import AppNavigation from './app/AppNavigation';
 
 import { mapState, mapMutations, mapActions } from 'vuex';
 
@@ -78,7 +78,7 @@ export default {
     Icon,
     LayoutFiles,
     LayoutEditor,
-    Navigation,
+    AppNavigation,
   },
 
   props: {
