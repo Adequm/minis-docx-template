@@ -114,9 +114,17 @@ store.mutations = {
     if(_.size(chunk)) {
       Vue.set(renderVariablesArray, index, chunk);
     } else {
+      if(!index) return;
       renderVariablesArray.splice(index, 1);
     }
   },
+
+  removeEditorHistory({ renderVariablesArray }, index) {
+    renderVariablesArray.splice(index, 1);
+  },
+  addEditorHistory({ renderVariablesArray }) {
+    renderVariablesArray.unshift([]);
+  }
 };
 
 

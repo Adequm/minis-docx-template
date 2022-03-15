@@ -54,7 +54,12 @@
         :isBeginning="isBeginning"
         :isEnd="isEnd"
         :value="slideIndex"
+        :showCenterButton="true"
+        :centerButtonDisabled="!lodash.size(renderVariablesArray[0])"
+        :centerButtonIcon="slideIndex ? 'trash' : 'disk'"
+        :centerButtonSize="14"
         @input="$emit('changeSlide', $event)"
+        @clickToCenterButton="clickToCenterButton"
       />
     </div>
   </div>
@@ -192,18 +197,39 @@ export default {
         this.valueKey = '';
         this.valueResult = '';
       }
+      this.$nextTick(this.setSlideWidth);
     },
 
-    deleteVariable({ key }) {
+    deleteVariable({ key }, isEdit) {
       this.$emit('deleteRenderVariable', { key, index: this.slideIndex });
+      if(!isEdit) {
+        const maxSlideIndex = _.size(this.renderVariablesArray) - 1;
+        const newSlideIndex = _.clamp(this.slideIndex, 0, maxSlideIndex);
+        this.$emit('changeSlide', newSlideIndex);
+        this.$emit('updatePage');
+      }
     },
 
     editVariable({ key, value }) {
-      this.deleteVariable({ key });
+      this.deleteVariable({ key }, true);
       this.valueKey = key;
       this.valueResult = value;
       this.$refs.textarea.focus();
       this.isVariablesMode = false;
+    },
+
+    clickToCenterButton() {
+      if(!this.slideIndex) {
+        if(!_.size(this.renderVariablesArray[0])) return;
+        this.$emit('addEditorHistory');
+        this.$emit('changeSlide', 1);
+      } else {
+        this.$emit('removeEditorHistory');
+        const maxSlideIndex = _.size(this.renderVariablesArray) - 1;
+        const newSlideIndex = _.clamp(this.slideIndex, 0, maxSlideIndex);
+        this.$emit('changeSlide', newSlideIndex);
+      }
+      this.$emit('updatePage');
     },
   },
 

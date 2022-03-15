@@ -32,6 +32,9 @@
         @changeSlide="slideIndexEditor = $event"
         @deleteRenderVariable="deleteRenderVariable"
         @addRenderVariable="addRenderVariable"
+        @removeEditorHistory="removeEditorHistory(slideIndexEditor)"
+        @addEditorHistory="addEditorHistory"
+        @updatePage="updatePage"
       />
 
       <LayoutFiles
@@ -120,6 +123,8 @@ export default {
     ...mapMutations([
       'addRenderVariable',
       'deleteRenderVariable',
+      'removeEditorHistory',
+      'addEditorHistory',
     ]),
 
     keydown({ key, shiftKey }) {
@@ -128,6 +133,12 @@ export default {
           this.$emit('switchSettings');
           break;
       }
+    },
+
+    updatePage() {
+      const value = this.isModeEditor;
+      this.isModeEditor = !value;
+      this.$nextTick(() => this.isModeEditor = value);
     },
   },
 
