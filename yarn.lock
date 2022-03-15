@@ -998,7 +998,7 @@
 
 "@minis-core/components@git+https://github.com/Adequm/minis-core-components.git":
   version "1.0.0"
-  resolved "git+https://github.com/Adequm/minis-core-components.git#90fa24f46f2472eb17a333cadba3eb75d555e9df"
+  resolved "git+https://github.com/Adequm/minis-core-components.git#d976fcaed75b5c8757f576ae1df6b38c1cf41b86"
   dependencies:
     lodash "^4.17.21"
     vue "^3.2.31"
