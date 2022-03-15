@@ -51,7 +51,7 @@
 <script>
 import { Swiper, SwiperSlide } from 'swiper-vue2';
 
-import translateMixin from '../../mixins/translate.mixin';
+import { translateMixin } from '@minis-core/mixins';
 
 import DisplayEmpty from '../display/DisplayEmpty';
 import DisplayFiles from '../display/DisplayFiles';

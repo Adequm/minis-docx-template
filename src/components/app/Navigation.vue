@@ -29,7 +29,7 @@
 import _ from 'lodash';
 import Icon from './Icon';
 
-import translateMixin from '../../mixins/translate.mixin';
+import { translateMixin } from '@minis-core/mixins';
 
 export default {
   name: 'Navigation',
