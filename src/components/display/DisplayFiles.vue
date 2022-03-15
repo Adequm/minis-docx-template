@@ -34,7 +34,7 @@
 
 <script>
 import _ from 'lodash';
-import Icon from '../app/Icon';
+import { Icon } from '@minis-core/components';
 
 export default {
   name: 'DisplayFiles',

@@ -64,8 +64,7 @@ import generateDocxMixin from '../mixins/generate-docx.mixin';
 import LayoutFiles from './layouts/LayoutFiles';
 import LayoutEditor from './layouts/LayoutEditor';
 
-import Icon from './app/Icon';
-import AppInputFiles from './app/AppInputFiles';
+import { Icon } from '@minis-core/components';
 import Navigation from './app/Navigation';
 
 import { mapState, mapMutations, mapActions } from 'vuex';
@@ -79,7 +78,6 @@ export default {
     Icon,
     LayoutFiles,
     LayoutEditor,
-    AppInputFiles,
     Navigation,
   },
 

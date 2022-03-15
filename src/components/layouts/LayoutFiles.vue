@@ -56,7 +56,7 @@ import { translateMixin } from '@minis-core/mixins';
 import DisplayEmpty from '../display/DisplayEmpty';
 import DisplayFiles from '../display/DisplayFiles';
 
-import AppInputFiles from '../app/AppInputFiles';
+import { AppInputFiles } from '@minis-core/components';
 
 export default {
   name: 'LayoutFiles',

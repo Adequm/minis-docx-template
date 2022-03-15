@@ -68,13 +68,11 @@
 <script>
 import { Swiper, SwiperSlide } from 'swiper-vue2';
 
+import { SlideButtons, AppTextarea } from '@minis-core/components';
 import { translateMixin } from '@minis-core/mixins';
 
 import DisplayEditor from '../display/DisplayEditor';
 import DisplayEmpty from '../display/DisplayEmpty';
-
-import SlideButtons from '../app/SlideButtons';
-import AppTextarea from '../app/AppTextarea';
 
 export default {
   name: 'LayoutEditor',
