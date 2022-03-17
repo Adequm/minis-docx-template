@@ -1013,7 +1013,7 @@
 
 "@minis-core/styles@git+https://github.com/Adequm/minis-core-styles.git":
   version "0.0.0"
-  resolved "git+https://github.com/Adequm/minis-core-styles.git#5554f58f943d3de33a243de80134c03cf3cb47f5"
+  resolved "git+https://github.com/Adequm/minis-core-styles.git#fdf3887cc900573a53311e4072649a95910754bc"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
