@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/minis-docx-template/precache-manifest.6b792183f9336355274b3c764efeaf09.js"
+  "/minis-docx-template/precache-manifest.f17dfd3b74b00597d16c50663a4bd0cd.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "docx-template"});
