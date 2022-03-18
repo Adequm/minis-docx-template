@@ -77,7 +77,7 @@ store.actions = {
 
 
 store.mutations = {
-  switchFullscreen: state => Vue.set(state, 'isFullscreen', !state.isFullscreen),
+  switchFullscreen: state => Vue.set(state, fullscreenKey, !state[fullscreenKey]),
   addFileToGlobalRepository(state, { path, file }) {
     const repository = state.globalRepositoryPath ? state.globalRepository : state;
     const pathToRepo = state.globalRepositoryPath || 'globalRepository';
