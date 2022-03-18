@@ -13,6 +13,7 @@ Vue.use(Vuex);
 
 store.state = () => ({
   [fullscreenKey]: false,
+  switchFullscreenKey: `switch_${fullscreenKey}`,
   projectKey,
   delimiterStart: '{{:',
   delimiterEnd: ':}}',
@@ -77,7 +78,7 @@ store.actions = {
 
 
 store.mutations = {
-  switchFullscreen: state => Vue.set(state, fullscreenKey, !state[fullscreenKey]),
+  [`switch_${fullscreenKey}`]: state => Vue.set(state, fullscreenKey, !state[fullscreenKey]),
   addFileToGlobalRepository(state, { path, file }) {
     const repository = state.globalRepositoryPath ? state.globalRepository : state;
     const pathToRepo = state.globalRepositoryPath || 'globalRepository';
