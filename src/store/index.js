@@ -4,15 +4,16 @@ import createPersistedState from 'vuex-persistedstate';
 import createMutationsSharer from 'vuex-shared-mutations';
 import _ from 'lodash';
 
+const projectKey = location.pathname.split('/')[1].split('-').slice(1).join('-');
+const fullscreenKey = `${ projectKey }-isFullscreen`;
 import { vuexMinisModule as minisModule, persistedMinis } from '@minis-core/mixins';
-const projectKey = location.pathname.split('/')[1];
 
 const store = {};
 Vue.use(Vuex);
 
 store.state = () => ({
-  isFullscreen: false,
-  projectKey: projectKey.split('-').slice(1).join('-'),
+  [fullscreenKey]: false,
+  projectKey,
   delimiterStart: '{{:',
   delimiterEnd: ':}}',
   globalRepositoryHash: null,
@@ -22,6 +23,11 @@ store.state = () => ({
   repositoryArray: [],
   renderVariablesArray: [],
 });
+
+
+store.getters = {
+  isFullscreen: state => state[fullscreenKey],
+};
 
 
 store.actions = {
@@ -129,7 +135,7 @@ store.mutations = {
 
 
 const persistedLocal = [
-  'isFullscreen',
+  fullscreenKey,
   'renderVariablesArray', 
   'delimiterStart', 
   'delimiterEnd',
@@ -138,7 +144,7 @@ store.modules = { minis: minisModule };
 store.plugins = [
   createMutationsSharer({ predicate: () => [...persistedMinis, ...persistedLocal] }),
   createPersistedState({ paths: persistedMinis, key: 'minis' }),
-  createPersistedState({ paths: persistedLocal, key: projectKey }),
+  createPersistedState({ paths: persistedLocal, key: `minis-${projectKey}` }),
 ];
 
 export default new Vuex.Store(store);
